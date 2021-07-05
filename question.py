@@ -65,4 +65,4 @@ def getTargetChannelId() -> int:
 
 
 # botとしてDiscordに接続(botのトークンを指定)
-client.run(ODYxNTQzODA2MzM5MTIxMTgz.YOLVMg.i9r_TylDpzEH79SGD1DnaVjSmxI)
+client.run(ODYxNTQzODA2MzM5MTIxMTgz.YOLVMg.2Lq3Q0-klHf0kmtJuaeZIR6iNuE)
