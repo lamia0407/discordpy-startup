@@ -1,48 +1,21 @@
-import io
-import json
-import csv
-
-import aiohttp
-from pathlib import Path
-import configparser
-
-import discord
-from discord import activity
 from discord.ext import commands
-from discord.ext.commands import Bot
+import os
+import traceback
+
+bot = commands.Bot(command_prefix='/')
+token = os.environ['DISCORD_BOT_TOKEN']
 
 
-class UserHelp(commands.DefaultHelpCommand):
-    def __init__(self):
-        super().__init__()
-        self.commands_heading = 'コマンド: '
-        self.no_category = 'other'
-        self.command_attrs['help'] = 'コマンド一覧と簡単な説明を表示'
-
-    def command_not_found(self, string: str):
-        return f'{string} というコマンドは見つかりませんでした'
-
-    def get_ending_note(self):
-        return (
-            "質問箱Bot\n",
-            "BotのDMにメッセージや画像を送ると、指定されたチャンネルに匿名化されて送信されます。"
-        )
+@bot.event
+async def on_command_error(ctx, error):
+    orig_error = getattr(error, "original", error)
+    error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+    await ctx.send(error_msg)
 
 
-def main():
-    with open('./info.json', 'r') as f:
-        json_load = json.load(f)
-    TOKEN = json_load['token']
-
-    prefix = '~'
-    bot = Bot(
-        command_prefix=prefix,
-        help_command=UserHelp(),
-        activity=discord.Game(name=f"send DM or {prefix}help")
-    )
-    bot.load_extension('cog')
-    bot.run(TOKEN)
+@bot.command()
+async def ping(ctx):
+    await ctx.send('pong')
 
 
-if __name__ == "__main__":
-    main()
+bot.run(token)
