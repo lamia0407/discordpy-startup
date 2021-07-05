@@ -1,1 +1,1 @@
-worker: python question.py
+worker: python discordbot.py
