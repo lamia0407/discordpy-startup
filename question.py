@@ -1,4 +1,5 @@
 import discord
+import os
 
 client = discord.Client()  # 接続に使用するオブジェクト
 token = os.environ['TOKEN_OF_YOUR_BOT']
