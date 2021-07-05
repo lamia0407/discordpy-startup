@@ -1,48 +1,68 @@
-import io
-import json
-import csv
-
-import aiohttp
-from pathlib import Path
-import configparser
-
 import discord
-from discord import activity
-from discord.ext import commands
-from discord.ext.commands import Bot
+
+client = discord.Client()  # 接続に使用するオブジェクト
 
 
-class UserHelp(commands.DefaultHelpCommand):
-    def __init__(self):
-        super().__init__()
-        self.commands_heading = 'コマンド: '
-        self.no_category = 'other'
-        self.command_attrs['help'] = 'コマンド一覧と簡単な説明を表示'
-
-    def command_not_found(self, string: str):
-        return f'{string} というコマンドは見つかりませんでした'
-
-    def get_ending_note(self):
-        return (
-            "質問箱Bot\n",
-            "BotのDMにメッセージや画像を送ると、指定されたチャンネルに匿名化されて送信されます。"
-        )
+# 起動時
+@client.event
+async def on_ready():
+    print('ログイン成功')
 
 
-def main():
-    with open('./info.json', 'r') as f:
-        json_load = json.load(f)
-    TOKEN = json_load['token']
+# メッセージを監視
+@client.event
+async def on_message(message):
+    # 「/box」が頭についたメッセージならオウム返しする
+    if message.content.startswith('/box'):
+        # 文字から「/box」を抜く
+        question = message.content[len('/box'):].strip()
+        # 質問させたいチャンネルのid
+        target_channel_id = getTargetChannelId()
 
-    prefix = '~'
-    bot = Bot(
-        command_prefix=prefix,
-        help_command=UserHelp(),
-        activity=discord.Game(name=f"send DM or {prefix}help")
-    )
-    bot.load_extension('cog')
-    bot.run(TOKEN)
+        # id=0なら質問者にエラー報告DM
+        # idが0以外なら匿名質問する
+        if target_channel_id == 0:
+            dm = await message.author.create_dm()  # 質問者へDM作成
+            await dm.send(
+                'Sorry, メッセージを送信できませんでした．'
+                'もう1度試してみてください．\n'
+                '【質問文】' + question)
+        else:
+            # 匿名質問させたいチャンネル
+            target_channel = client.get_channel(target_channel_id)
+            # チャンネルに質問メッセージ送信
+            await target_channel.send(question)
 
 
-if __name__ == "__main__":
-    main()
+# 匿名質問させたいチャンネルのidを取得
+# 指定したカテゴリにある最初のTextチャンネル＝質問させたいチャンネルとみなす
+# ただしカテゴリにチャンネルが無い時は0を返す
+def getTargetChannelId() -> int:
+    # 質問させたいチャンネル(対象チャンネル)
+    target_channel = {'id': 0, 'position': 99999999}
+    # ***********************************************************
+    # 指定カテゴリ(対象チャンネルが含まれたカテゴリ)の名前
+
+    category_id = INT_ID_OF_YOUR_CATEGORY  # カテゴリidを指定
+    target_category_name = client.get_channel(category_id).name
+
+    # ***********************************************************
+    # 指定したサーバにある全てのTextチャンネル一覧
+    all_channels = client.get_guild(INT_ID_OF_SERVER).text_channels
+
+    # 全てのTextチャンネルから「指定カテゴリに属する最初のチャンネル」を探す
+    for channel in all_channels:
+        # 指定カテゴリに属する場合だけ対象チャンネル候補とみなす
+        if str(channel.category) == target_category_name:
+            # positionが小さいほうを「より対象チャンネルに近い」として交換
+            # 初期値はpositionが大きい(99999999)ので，必ず入れ替わる想定
+            # 繰り返せば，最後にはpositionが最も小さいチャンネルを代入できる
+            if target_channel['position'] > int(channel.position):
+                target_channel['id'] = int(channel.id)
+                target_channel['position'] = int(channel.position)
+    # 最終的に代入されたidを返す
+    return target_channel['id']
+
+
+# botとしてDiscordに接続(botのトークンを指定)
+client.run('TOKEN_OF_YOUR_BOT')
