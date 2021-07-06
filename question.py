@@ -1,12 +1,16 @@
 import discord
+import os
 
 client = discord.Client()  # 接続に使用するオブジェクト
+token = os.environ['TOKEN_OF_YOUR_BOT']
 
 
 # 起動時
 @client.event
-async def on_ready():
-    print('ログイン成功')
+async def on_command_error(ctx, error):
+    orig_error = getattr(error, "original", error)
+    error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+    await ctx.send(error_msg)
 
 
 # メッセージを監視
@@ -17,7 +21,7 @@ async def on_message(message):
         # 文字から「/box」を抜く
         question = message.content[len('/box'):].strip()
         # 質問させたいチャンネルのid
-        target_channel_id = getTargetChannelId()
+        target_channel_id = 527769481926410242
 
         # id=0なら質問者にエラー報告DM
         # idが0以外なら匿名質問する
@@ -34,4 +38,4 @@ async def on_message(message):
             await target_channel.send(question)
 
 # botとしてDiscordに接続(botのトークンを指定)
-client.run('TOKEN_OF_YOUR_BOT')
+client.run(token)
