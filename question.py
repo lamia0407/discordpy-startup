@@ -17,9 +17,7 @@ async def on_command_error(ctx, error):
 @client.event
 async def on_message(message):
     # 「/box」が頭についたメッセージならオウム返しする
-    if message.content.startswith('/box'):
-        # 文字から「/box」を抜く
-        question = message.content[len('/box'):].strip()
+    if message.content
         # 質問させたいチャンネルのid
         target_channel_id = 861529320383578112
 
