@@ -21,7 +21,7 @@ async def on_message(message):
         # 文字から「/box」を抜く
         question = message.content[len('/box'):].strip()
         # 質問させたいチャンネルのid
-        target_channel_id = 527769481926410242
+        target_channel_id = 861529320383578112
 
         # id=0なら質問者にエラー報告DM
         # idが0以外なら匿名質問する
