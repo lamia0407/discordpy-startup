@@ -17,7 +17,7 @@ async def on_command_error(ctx, error):
 @client.event
 async def on_message(message):
     # 「/box」が頭についたメッセージならオウム返しする
-    if message.content
+    if message.content:
         # 質問させたいチャンネルのid
         target_channel_id = 861529320383578112
 
