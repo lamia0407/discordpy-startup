@@ -16,7 +16,6 @@ async def on_command_error(ctx, error):
 # メッセージを監視
 @client.event
 async def on_message(message):
-    
         # 質問させたいチャンネルのid
         target_channel_id = 861529320383578112
 
