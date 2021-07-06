@@ -16,8 +16,8 @@ async def on_command_error(ctx, error):
 # メッセージを監視
 @client.event
 async def on_message(message):
-    # 「/box」が頭についたメッセージならオウム返しする
-   if message.author != client.user:
+  if message.author != client.user:
+        msg = message.content
         # 質問させたいチャンネルのid
         target_channel_id = 861529320383578112
 
@@ -33,7 +33,7 @@ async def on_message(message):
             # 匿名質問させたいチャンネル
             target_channel = client.get_channel(target_channel_id)
             # チャンネルに質問メッセージ送信
-            await target_channel.send(question)
+            await target_channel.send(msg)
 
 # botとしてDiscordに接続(botのトークンを指定)
 client.run(token)
