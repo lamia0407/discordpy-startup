@@ -16,9 +16,9 @@ async def on_command_error(ctx, error):
 # メッセージを監視
 @client.event
 async def on_message(message):
-    if message.channel.id == 861529320383578112: #チャンネル限定
-        if not message.author.bot: #ボット以外
-            #code
+    
+        # 質問させたいチャンネルのid
+        target_channel_id = 861529320383578112
 
         # id=0なら質問者にエラー報告DM
         # idが0以外なら匿名質問する
